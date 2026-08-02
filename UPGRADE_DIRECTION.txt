@@ -1,0 +1,490 @@
+# PORTFOLIO UPGRADE DIRECTION
+# For: Alen John (CrescentState)
+# Current State: Multi-page portfolio (Hero, Work, About, Contact)
+# Target: igloo.inc / jcedrik.com level experience
+# Date: 2026-08-02
+
+================================================================================
+PART 1 — CURRENT STATE ANALYSIS
+================================================================================
+
+WHAT'S ALREADY BUILT (and working well):
+- Multi-page routing: / (Home), /work, /about, /contact
+- Clean dark theme with teal accent (#00d4aa)
+- Professional typography hierarchy
+- Project cards with category labels, tech tags, descriptions
+- Contact form with project type & budget dropdowns
+- Mobile hamburger menu
+- Footer with WORK / CONNECT / LEGAL columns
+- Particle/network background animation on hero
+- "Scroll to explore" indicator
+
+WHAT'S MISSING (the igloo.inc / jcedrik.com gap):
+- Page transitions are hard cuts (no smooth transition between routes)
+- No scroll-driven section reveals (content is just... there)
+- No smooth scroll (native browser scroll feels choppy)
+- Project cards have minimal hover interaction
+- Hero text appears instantly (no staggered reveal)
+- No custom cursor
+- No mouse-reactive depth
+- About page is dense (bio + skills + stats + CTA all visible at once)
+- No preloader/loading state
+
+================================================================================
+PART 2 — THE UPGRADE PLAN (Prioritized)
+================================================================================
+
+TIER 1: MUST-HAVE (Biggest impact, least effort)
+
+1. LENIS SMOOTH SCROLL
+   Install: npm install lenis
+   Wrap the entire app. This alone makes the site feel 10x more premium.
+
+2. GSAP SCROLLTRIGGER SECTION REVEALS
+   Install: npm install gsap @gsap/react
+   Every section on every page fades/slides up as it enters viewport.
+   Easing: power3.out (maps to your cubic-bezier(0.16, 1, 0.3, 1))
+   Duration: 0.8s
+   Stagger: 0.1s between children
+
+3. PAGE TRANSITIONS
+   Between route changes, fade out current page, fade in new page.
+   Duration: 0.4s
+   Use React Router's useLocation + AnimatePresence (framer-motion) OR
+   GSAP timeline for exit/enter.
+
+4. HERO TEXT STAGGER REVEAL
+   On home page load:
+   - "CREATIVE DEVELOPER" fades in first
+   - "Python Backend Engineer" slides up with 0.15s delay
+   - "Building Async Data Pipelines" slides up with 0.3s delay
+   - Bio text fades in with 0.45s delay
+   - Buttons fade in with 0.6s delay
+
+5. PROJECT CARD HOVER EFFECTS
+   On hover:
+   - Card lifts (translateY: -8px)
+   - Subtle teal glow shadow appears
+   - Image inside scales slightly (1.05)
+   - "View Project" text shifts right with arrow
+   Duration: 0.3s, ease: power2.out
+
+TIER 2: HIGH IMPACT (Medium effort)
+
+6. CUSTOM CURSOR
+   Small teal dot (8px) replacing default cursor.
+   On hover over links/buttons: scales to 32px, inverts color.
+   On hover over project cards: scales to 48px with "View" text inside.
+   Hidden on mobile, disabled when prefers-reduced-motion.
+
+7. MOUSE-REACTIVE PARTICLE BACKGROUND
+   Your existing particle network should subtly react to mouse position.
+   Particles near cursor get brighter / larger.
+   Connection lines near cursor glow teal.
+   This is the "depth" effect from igloo.inc.
+
+8. PRELOADER
+   On first visit, show a brief loading screen:
+   - Your logo "Alen" or "<>" symbol
+   - Teal progress bar or typing animation
+   - "Initializing..." or "Loading experience..."
+   Duration: 1.5s max (don't annoy repeat visitors)
+
+9. ABOUT PAGE SCROLL STORY
+   Currently the About page dumps everything at once.
+   Restructure as scroll-driven reveals:
+   - "About Me" heading + bio (reveals on scroll)
+   - Work description paragraph (reveals on scroll)
+   - Skills categories stagger in one by one
+   - Stats bar counts up (2027, 100xDevs, 4+, ∞)
+   - CTA section reveals last
+
+TIER 3: POLISH (Lower priority)
+
+10. CONTACT FORM MICRO-INTERACTIONS
+    - Input focus: border glows teal, label floats up
+    - Dropdown open: smooth height animation
+    - "Send Message" button: loading state with spinner
+    - Success: form fades out, "Message sent!" fades in
+
+11. NAVBAR ENTRANCE
+    On page load: navbar slides down from top (0.6s, power3.out)
+    On scroll down: navbar hides (slides up)
+    On scroll up: navbar reappears (slides down)
+
+12. FOOTER REVEAL
+    Footer is "revealed" as you scroll to bottom (not just sitting there)
+    Use "footer reveal" effect: previous section scrolls UP to uncover footer
+
+================================================================================
+PART 3 — SECTION-BY-SECTION UPGRADES
+================================================================================
+
+--- HOME PAGE ---
+
+HERO:
+[Current] All text visible instantly, particles animate in background
+[Upgrade]
+  1. Preloader runs first (1.5s)
+  2. Particle background fades in
+  3. Text staggers in (see Tier 1 #4)
+  4. "Scroll to explore" pulses gently (scale 1 → 1.1 → 1, 2s loop)
+  5. Mouse movement subtly shifts particle focus point
+
+--- WORK PAGE (/work) ---
+
+PAGE TRANSITION:
+[Current] Hard cut from home
+[Upgrade] Fade out home (0.3s) → fade in work (0.4s, staggered)
+
+SELECTED WORK HEADER:
+[Current] Static text
+[Upgrade] "SELECTED WORK" label fades in, "Selected Work" heading slides up,
+          subtitle fades in. Stagger: 0.1s each.
+
+PROJECT CARDS:
+[Current] Static grid, minimal hover
+[Upgrade]
+  - Cards are invisible initially, stagger in as user scrolls (0.15s delay each)
+  - Hover: lift + glow + image scale + "View Project" arrow animation
+  - Click: card scales down briefly (0.95) then navigates to project
+
+--- ABOUT PAGE (/about) ---
+
+PAGE TRANSITION:
+[Current] Hard cut
+[Upgrade] Slide transition (current page slides up, new page slides in from bottom)
+
+ABOUT HEADER:
+[Upgrade] "ABOUT ME" label types out character by character (50ms/char)
+           "About Me" heading slides up
+           Bio paragraph fades in
+
+WORK DESCRIPTION:
+[Upgrade] Text reveals line by line as user scrolls (ScrollTrigger scrub)
+
+SKILLS:
+[Upgrade] Each category (BACKEND, DATA, FRONTEND, DEVOPS) reveals with stagger.
+           Tags within each category stagger in (0.05s delay each).
+
+STATS BAR:
+[Upgrade] Numbers count up from 0 when scrolled into view.
+           2027: counts up from 2015
+           100xDevs: fades in with scale (0.8 → 1)
+           4+: counts up from 0
+           ∞: rotates in (360deg) or scales in with bounce
+
+CTA SECTION:
+[Upgrade] "Want to work together?" fades in
+           Subtext slides up
+           "Get In Touch" button pulses subtly (glow animation)
+
+--- CONTACT PAGE (/contact) ---
+
+PAGE TRANSITION:
+[Upgrade] Fade transition
+
+CONTACT HEADER:
+[Upgrade] Same typewriter/scroll reveal as About
+
+FORM FIELDS:
+[Upgrade] Each field reveals with stagger on scroll
+           Focus states: border glows teal, label floats up with animation
+
+CONNECT LINKS:
+[Upgrade] GitHub, LinkedIn, Wellfound, Email cards stagger in
+           Hover: card lifts, icon scales, teal border glows
+
+================================================================================
+PART 4 — TECHNICAL IMPLEMENTATION
+================================================================================
+
+INSTALL DEPENDENCIES:
+   npm install lenis gsap @gsap/react framer-motion
+
+LENIS SETUP (App.tsx or layout wrapper):
+   import Lenis from 'lenis'
+
+   useEffect(() => {
+     const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) })
+     function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf) }
+     requestAnimationFrame(raf)
+     return () => lenis.destroy()
+   }, [])
+
+GSAP SCROLLTRIGGER PATTERN (reusable):
+   useGSAP(() => {
+     gsap.from('.section-content', {
+       y: 60,
+       opacity: 0,
+       duration: 0.8,
+       ease: 'power3.out',
+       stagger: 0.1,
+       scrollTrigger: {
+         trigger: '.section-container',
+         start: 'top 80%',
+         toggleActions: 'play none none none'
+       }
+     })
+   }, { scope: sectionRef })
+
+PAGE TRANSITION (with Framer Motion):
+   <AnimatePresence mode="wait">
+     <motion.div
+       key={location.pathname}
+       initial={{ opacity: 0, y: 20 }}
+       animate={{ opacity: 1, y: 0 }}
+       exit={{ opacity: 0, y: -20 }}
+       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+     >
+       <Outlet />
+     </motion.div>
+   </AnimatePresence>
+
+CUSTOM CURSOR (simplified):
+   - Position fixed div that follows mouse with lerp (0.15 factor)
+   - Scale changes based on hovered element (data-cursor="link" | "card" | "default")
+   - Hide on mobile: @media (hover: none) { cursor: none; }
+   - Disable when prefers-reduced-motion
+
+================================================================================
+PART 5 — DESIGN TOKEN ALIGNMENT
+================================================================================
+
+Your current design system is good. Keep it. Just add these motion tokens:
+
+:root {
+  /* Motion (add these) */
+  --transition-page: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-reveal: 800ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-hover: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-micro: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --stagger-fast: 0.05s;
+  --stagger-normal: 0.1s;
+  --stagger-slow: 0.15s;
+}
+
+================================================================================
+PART 6 — BUILD ORDER
+================================================================================
+
+PHASE 1 (This weekend):
+1. Install lenis, gsap, framer-motion
+2. Add Lenis smooth scroll
+3. Add page transitions (Framer Motion AnimatePresence)
+4. Add GSAP ScrollTrigger to all sections
+
+PHASE 2 (Next week):
+5. Hero text stagger reveal
+6. Project card hover effects
+7. About page scroll story
+8. Stats count-up animation
+
+PHASE 3 (Following week):
+9. Custom cursor
+10. Mouse-reactive particles
+11. Preloader
+12. Contact form micro-interactions
+
+PHASE 4 (Polish):
+13. Navbar hide/show on scroll
+14. Footer reveal effect
+15. Performance audit (60fps check)
+16. Reduced motion testing
+
+================================================================================
+PART 7 — CRITICAL RULES
+================================================================================
+
+1. NEVER break existing functionality. The site works. Upgrade, don't rebuild.
+2. All animations gated by prefers-reduced-motion.
+3. Mobile-first: disable cursor, simplify particles, reduce stagger.
+4. 60fps or simplify. Test on actual mid-range phone.
+5. Page transitions must be fast (< 0.5s). Don't make users wait.
+6. Keep the multi-page architecture. Don't force single-page scroll.
+7. The teal accent (#00d4aa) is your brand. Use it for ALL interactive moments.
+
+================================================================================
+END OF DIRECTION
+================================================================================
+
+================================================================================
+PART 8 — BIDIRECTIONAL SCROLL ANIMATIONS (CRITICAL)
+================================================================================
+
+REQUIREMENT: Every scroll animation must reverse when scrolling up.
+If text slides up on scroll-down, it must slide back down on scroll-up.
+If a card fades in on scroll-down, it must fade out on scroll-up.
+This is non-negotiable. It makes the site feel like a physical surface.
+
+---
+
+GSAP SCROLLTRIGGER — BIDIRECTIONAL PATTERNS
+
+PATTERN A: Scrub (Smooth bidirectional, recommended for most reveals)
+
+useGSAP(() => {
+  gsap.fromTo('.reveal-item', 
+    { y: 60, opacity: 0 },
+    {
+      y: 0,
+      opacity: 1,
+      duration: 1,
+      ease: 'power3.out',
+      stagger: 0.1,
+      scrollTrigger: {
+        trigger: '.section-container',
+        start: 'top 80%',
+        end: 'top 30%',
+        scrub: 1,        // <-- KEY: Smooth bidirectional
+      }
+    }
+  )
+}, { scope: sectionRef })
+
+Behavior:
+- Scroll down: items animate from → to
+- Scroll up: items animate to → from (reverse)
+- Smooth, tied directly to scroll position
+
+---
+
+PATTERN B: Toggle Actions (Snap bidirectional, for dramatic entrances)
+
+useGSAP(() => {
+  gsap.from('.reveal-item', {
+    y: 80,
+    opacity: 0,
+    duration: 0.8,
+    ease: 'power3.out',
+    stagger: 0.1,
+    scrollTrigger: {
+      trigger: '.section-container',
+      start: 'top 75%',
+      toggleActions: 'play reverse play reverse',  // <-- KEY
+    }
+  })
+}, { scope: sectionRef })
+
+Behavior:
+- Scroll down into view: plays forward
+- Scroll up out of view: plays reverse
+- Scroll down out of view: plays forward again
+- Scroll up into view: plays reverse again
+
+The four values are: onEnter, onLeave, onEnterBack, onLeaveBack
+"play reverse play reverse" = play on enter, reverse on leave, play on enterBack, reverse on leaveBack
+
+---
+
+PATTERN C: Scrub + Pin (For pinned sections like the Hero sequence)
+
+useGSAP(() => {
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: '.pinned-section',
+      start: 'top top',
+      end: '+=200%',      // Pin for 2 viewports of scroll
+      pin: true,
+      scrub: 1,           // Bidirectional
+    }
+  })
+
+  tl.fromTo('.command-1', { opacity: 0, y: 30 }, { opacity: 1, y: 0 })
+    .fromTo('.command-2', { opacity: 0, y: 30 }, { opacity: 1, y: 0 })
+    .fromTo('.command-3', { opacity: 0, y: 30 }, { opacity: 1, y: 0 })
+
+}, { scope: sectionRef })
+
+Behavior:
+- Scroll down: timeline progresses forward (command 1 → 2 → 3)
+- Scroll up: timeline scrubs backward (command 3 → 2 → 1)
+- The section stays pinned until fully scrubbed
+
+---
+
+PATTERN D: Count-Up Stats (Bidirectional with custom logic)
+
+For stats that count up on scroll down, they should count down on scroll up.
+
+useGSAP(() => {
+  const stat = { value: 0 }
+
+  gsap.to(stat, {
+    value: 2027,
+    duration: 1,
+    ease: 'power2.out',
+    scrollTrigger: {
+      trigger: '.stats-section',
+      start: 'top 80%',
+      end: 'top 40%',
+      scrub: 1,
+      onUpdate: (self) => {
+        // Update DOM with current value
+        document.querySelector('.stat-year').textContent = Math.round(stat.value)
+      }
+    }
+  })
+}, { scope: sectionRef })
+
+---
+
+SECTION-SPECIFIC BIDIRECTIONAL BEHAVIOR
+
+HOME PAGE — Hero:
+[Scroll down] Text staggers in (opacity 0→1, y 30→0)
+[Scroll up] Text staggers out (opacity 1→0, y 0→30)
+Method: Scrub on hero container, or toggleActions on individual elements
+
+WORK PAGE — Project Cards:
+[Scroll down] Cards stagger in (y 60→0, opacity 0→1)
+[Scroll up] Cards stagger out (y 0→60, opacity 1→0)
+Method: Scrub with stagger
+
+ABOUT PAGE — Skills:
+[Scroll down] Categories reveal one by one
+[Scroll up] Categories hide one by one (reverse order)
+Method: Scrub timeline
+
+ABOUT PAGE — Stats:
+[Scroll down] Numbers count up
+[Scroll up] Numbers count down
+Method: Scrub with onUpdate
+
+CONTACT PAGE — Form Fields:
+[Scroll down] Fields stagger in
+[Scroll up] Fields stagger out
+Method: ToggleActions or scrub
+
+---
+
+CRITICAL CONFIGURATION
+
+Always set these defaults at app initialization:
+
+gsap.defaults({ ease: 'power3.out', duration: 0.8 })
+
+ScrollTrigger.defaults({
+  toggleActions: 'play reverse play reverse',  // Default bidirectional
+})
+
+// For scrubbed animations, always use:
+// scrub: 1 (or true) — NOT scrub: false
+
+---
+
+PERFORMANCE NOTE
+
+Bidirectional animations with scrub can be heavy if not optimized:
+- Use transform and opacity only (GPU-accelerated)
+- Avoid animating layout properties (width, height, margin)
+- Use will-change sparingly: will-change: transform, opacity
+- Kill ScrollTriggers on component unmount:
+
+useEffect(() => {
+  return () => {
+    ScrollTrigger.getAll().forEach(t => t.kill())
+  }
+}, [])
+
+================================================================================
